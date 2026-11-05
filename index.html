@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111820">
+  <title>Raíces de Bruma — RPG de exploración</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Raíces de Bruma, inicio"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>RAÍCES <b>DE BRUMA</b></span></a>
+      <span class="edition"><i></i> RPG DE EXPLORACIÓN · 2D</span>
+    </header>
+
+    <section class="intro" id="inicio">
+      <div><div class="eyebrow"><span></span> CRÓNICAS DEL VALLE ANTIGUO</div><h1>La bruma <em>despierta.</em></h1><p>Explora el valle, reúne cristales y ayuda a tu criatura a proteger el bosque.</p></div>
+      <div class="chapter-mark"><span id="chapter-mark-kicker">CAPÍTULO</span><b id="chapter-mark-number">01 / 03</b><i id="chapter-mark-name">EL VALLE</i></div>
+    </section>
+
+    <section class="game-layout" aria-label="Aventura">
+      <section class="world-column">
+        <section class="world-card" aria-label="Mundo del juego">
+          <div class="world-heading"><div><span class="location-label" id="zone-label">CAPÍTULO 01 · VALLE ANTIGUO</span><h2 id="zone-title">Sendero de los ecos</h2></div><span class="weather"><span id="weather-icon">☼</span> <b id="weather-label">BRUMA LIGERA</b></span></div>
+          <div class="exploration-view" id="exploration-view">
+            <div class="map-grid" id="world-grid" role="grid" aria-label="Mapa del bosque"></div>
+            <div class="map-legend"><span><i class="legend-player"></i> TÚ</span><span><i class="legend-crystal" id="legend-resource-symbol">✦</i> <b id="legend-resource-name">CRISTAL</b></span><span><i class="legend-creature">◆</i> CRIATURA</span><span><i class="legend-trap">!</i> TRAMPA</span></div>
+            <div class="move-row">
+              <div class="dpad" aria-label="Controles de movimiento"><button type="button" data-move="up" aria-label="Mover arriba">↑</button><button type="button" data-move="left" aria-label="Mover izquierda">←</button><button type="button" data-move="down" aria-label="Mover abajo">↓</button><button type="button" data-move="right" aria-label="Mover derecha">→</button></div>
+              <span class="keyboard-hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> o flechas para moverte</span>
+            </div>
+          </div>
+          <section class="battle-view" id="battle-view" hidden aria-live="polite">
+            <div class="battle-banner"><span>ENCUENTRO</span><b id="battle-caption">Una criatura aparece.</b></div>
+            <div class="battle-arena"><div class="creature creature-enemy"><span class="character-sprite sprite-moss" id="enemy-sprite" aria-hidden="true"><i></i><b></b><em></em></span><b id="enemy-name">Criatura</b><div class="health-track"><i id="enemy-health"></i></div><small id="enemy-hp-label">12 / 12 PV</small></div><div class="battle-vs">VS</div><div class="creature creature-player"><span class="character-sprite sprite-luma" aria-hidden="true"><i></i><b></b><em></em></span><b>Luma</b><div class="health-track"><i id="player-health"></i></div><small id="player-hp-label">24 / 24 PV</small></div></div>
+            <div class="battle-message" id="battle-message">¿Qué hará Luma?</div>
+            <div class="battle-actions" id="battle-actions"><button type="button" data-action="strike"><span>✦</span><b>Destello</b><small>ATAQUE</small></button><button type="button" data-action="guard"><span>⬡</span><b>Proteger</b><small>DEFENSA</small></button><button type="button" data-action="potion"><span>✚</span><b>Poción <i id="battle-potions">× 2</i></b><small>OBJETO</small></button><button type="button" data-action="run" id="run-button"><span>↗</span><b>Retirarse</b><small>ESCAPAR</small></button></div>
+            <button class="continue-button" id="battle-continue" type="button" hidden>CONTINUAR EXPLORANDO <span>↗</span></button>
+          </section>
+          <div class="alert-strip" id="trap-alert" hidden><span>!</span><div><b>TRAMPA DEL BOSQUE</b><small>Perdiste este turno. La alerta roja permanece hasta resolverlo.</small></div></div>
+        </section>
+        <div class="world-status"><span class="status-dot"></span><p id="world-message">Llega al santuario del norte y reúne tres cristales para abrir el paso.</p><span class="turn-count" id="turn-count">TURNO 01</span></div>
+        <section class="ending-card" id="ending-card" hidden><span id="ending-kicker">CAPÍTULO 01 · COMPLETADO</span><b id="ending-title">El valle respira.</b><p id="ending-copy">La bruma se disipa y el bosque vuelve a brillar.</p><div class="ending-actions"><button type="button" id="next-chapter-button">CONTINUAR AL CAPÍTULO 02 ↗</button><button type="button" id="ending-restart">REINICIAR AVENTURA ↻</button></div></section>
+      </section>
+
+      <aside class="side-column">
+        <section class="side-card quest-card"><div class="card-label"><span>OBJETIVO DEL CAPÍTULO</span><span class="quest-icon">✳</span></div><h2 id="quest-title">Despierta el<br>santuario.</h2><p id="quest-description">El guardián solo dejará pasar a quien traiga los tres fragmentos del valle.</p><div class="quest-progress"><span id="resource-label">CRISTALES</span><b id="resource-count">0 / 3</b></div><div class="crystal-track" id="crystal-track"><i></i><i></i><i></i></div><div class="quest-step"><span>1</span><p id="quest-step-one">Explora el bosque y recoge sus cristales.</p></div><div class="quest-step"><span>2</span><p id="quest-step-two">Guía a Luma hasta el guardián del santuario.</p></div></section>
+        <section class="side-card companion-card"><div class="card-label"><span>COMPAÑERA</span><span class="level-badge" id="level-badge">NIVEL 01</span></div><div class="companion-head"><span class="companion-portrait"><i></i><b></b><em></em></span><div><h2>Luma</h2><span>ESPÍRITU DE LUZ</span></div></div><div class="stat-row"><span>ENERGÍA</span><b id="hp-side-label">24 / 24</b></div><div class="stat-track"><i id="hp-side-bar"></i></div><div class="stat-row xp-row"><span>EXPERIENCIA</span><b id="xp-label">0 / 3</b></div><div class="xp-track"><i id="xp-bar"></i></div><div class="inventory"><span>MOCHILA</span><div><span class="inventory-crystal" id="inventory-resource-symbol">✦ <b id="inventory-crystals">0</b></span><span class="inventory-potion">✚ <b id="inventory-potions">2</b></span><span class="inventory-herb">❋ <b id="inventory-herbs">0</b></span></div></div></section>
+        <section class="side-card journal-card"><div class="card-label"><span>DIARIO DE VIAJE</span><span>◷</span></div><p id="journal-entry">Luma llegó al borde del valle. La bruma oculta más de lo que parece.</p><button type="button" id="restart-button" class="restart-button">↻ <span>Reiniciar aventura</span></button></section>
+      </aside>
+    </section>
+
+    <footer class="page-footer"><span>RAÍCES DE BRUMA <b>© 2026</b></span><span>EXPLORA · COMBATE · DESCUBRE</span><span>HTML · CSS · VANILLA JS</span></footer>
+  </main>
+</body>
+</html>
