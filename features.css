@@ -1,0 +1,43 @@
+.feature-backdrop[hidden]{display:none!important}
+.map-cell.is-trap-revealed{background:#513638;border-color:#df756c;color:#ffd2bb}
+.map-object-trap{width:60%;height:60%;border:1px solid #ff9486;border-radius:50%;background:#762f37;color:#fff;font:bold 12px var(--mono);box-shadow:0 0 11px #ef686388}
+.feature-backdrop{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:#080d0dda;backdrop-filter:blur(7px)}
+.feature-panel{width:min(650px,100%);max-height:min(86vh,760px);overflow:auto;padding:22px;border:1px solid #526353;border-radius:6px;background:linear-gradient(145deg,#202c30,#151e26);box-shadow:0 25px 90px #0009;outline:none}
+.feature-panel:focus{outline:none}
+.feature-bestiary{width:min(850px,100%)}
+.feature-heading{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff15;padding-bottom:14px}
+.feature-kicker{font:7px var(--mono);letter-spacing:.16em;color:var(--green)}
+.feature-heading h2{font:600 27px var(--display);letter-spacing:-.04em;margin:5px 0 0;color:var(--text)}
+.feature-close{width:30px;height:30px;border:1px solid #4a584e;border-radius:50%;background:#222e2a;color:#b9c4b8;font-size:20px;cursor:pointer}
+.feature-close:hover{border-color:var(--green);color:var(--green)}
+.feature-tabs{display:flex;gap:7px;border-bottom:1px solid #ffffff13;padding:13px 0 10px}
+.feature-tabs button{border:1px solid transparent;border-radius:3px;padding:8px 10px;background:transparent;color:#86968b;font:7px var(--mono);letter-spacing:.1em;cursor:pointer}
+.feature-tabs button.is-selected{border-color:#61734f;background:#2a382e;color:var(--green)}
+.feature-list{display:grid;gap:8px;padding:14px 0}
+.feature-entry{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;align-items:center;gap:11px;padding:11px;border:1px solid #374740;border-radius:4px;background:#202b2b}
+.feature-entry.is-empty{opacity:.62}
+.feature-entry-icon{display:grid;place-items:center;width:36px;height:36px;border:1px solid #576950;border-radius:4px;background:#2b3b31;color:var(--green);font-size:18px}
+.feature-entry-copy h3{margin:0 0 3px;font:600 11px var(--display);color:var(--text)}
+.feature-entry-copy p{margin:0;color:#95a49b;font-size:9px;line-height:1.45}
+.feature-quantity{color:#d5dfd2;font:8px var(--mono);white-space:nowrap}
+.feature-action{border:1px solid #60734f;border-radius:3px;padding:7px 9px;background:#29382e;color:var(--green);font:7px var(--mono);cursor:pointer}
+.feature-action:hover:not(:disabled){background:#354735}
+.feature-action:disabled{opacity:.38;cursor:default}
+.feature-hint{margin:0;color:#85958b;font-size:9px;line-height:1.5}
+.feature-list+.feature-hint{padding-top:0}
+.bestiary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding-top:12px}
+.bestiary-entry{min-width:0;display:flex;flex-direction:column;align-items:center;padding:12px 10px;border:1px solid #3c4a42;border-radius:4px;background:linear-gradient(145deg,#25322d,#1c2729);text-align:center}
+.bestiary-entry.is-boss{border-color:#695d46}
+.bestiary-entry.is-unknown{background:#1c2527}
+.bestiary-entry.is-unknown .bestiary-character{filter:grayscale(1) opacity(.24)}
+.bestiary-character{position:relative;width:72px;height:66px;margin:0 auto 6px;filter:drop-shadow(0 4px 4px #0007)}
+.bestiary-character .character-sprite{width:100%;height:100%;filter:none}
+.bestiary-entry h3{font:600 11px var(--display);margin:3px 0 5px;color:var(--text)}
+.bestiary-entry p{min-height:36px;margin:5px 0;color:#9ba9a0;font-size:8px;line-height:1.4}
+.bestiary-element{color:#b8d18e;font:6px var(--mono);letter-spacing:.06em}
+.bestiary-stats{margin-top:auto;padding-top:6px;border-top:1px solid #ffffff12;color:#bac4b8;font:6px/1.5 var(--mono);letter-spacing:.015em}
+body.feature-open{overflow:hidden}
+body.feature-open .feature-panel{outline:none}
+@media(max-width:930px){.bestiary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.feature-backdrop{padding:10px}.feature-panel{padding:15px;max-height:92vh}.feature-heading h2{font-size:23px}.feature-entry{grid-template-columns:32px minmax(0,1fr) auto;gap:8px;padding:8px}.feature-entry-icon{width:31px;height:31px}.feature-entry-copy p{font-size:8px}.feature-action{grid-column:2/-1;justify-self:end}.bestiary-grid{gap:6px}.bestiary-entry{padding:9px 6px}.bestiary-entry p{font-size:7px}.bestiary-stats{font-size:5px}}
+#open-inventory,#open-bestiary{cursor:pointer}

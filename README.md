@@ -6,6 +6,8 @@ RPG 2D de exploración por casillas y combates por turnos, creado con HTML, CSS 
 
 Abre `index.html` en un navegador moderno. Muévete con las flechas, con W/A/S/D o con los controles en pantalla. Recoge los tres recursos de la zona, combate a las criaturas y llega al guardián. En batalla, elige Destello, Proteger, Poción o Retirarse. La experiencia y el nivel de Luma se conservan entre capítulos.
 
+Abre la mochila desde el contador de recursos de Luma o con **I**. Sus pestañas muestran recursos, pociones y herramientas. El pico abre un paso al lado de un árbol que se puede retirar; el farol revela las trampas ocultas a cuatro pasos y ambos consumen un turno. También puedes usar el pico con **P** y el farol con **L**. Abre la guía desde el icono del diario o con **B**; las criaturas se registran al encontrarlas en combate. Cierra cualquiera de las ventanas con **Esc**.
+
 ## Capítulos
 
 1. **El Valle Antiguo:** recoge tres cristales y vence al Guardián del valle.

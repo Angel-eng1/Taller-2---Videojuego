@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#111820">
   <title>Raíces de Bruma — RPG de exploración</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="features.css">
   <script src="game.js" defer></script>
 </head>
 <body>
@@ -47,12 +48,29 @@
 
       <aside class="side-column">
         <section class="side-card quest-card"><div class="card-label"><span>OBJETIVO DEL CAPÍTULO</span><span class="quest-icon">✳</span></div><h2 id="quest-title">Despierta el<br>santuario.</h2><p id="quest-description">El guardián solo dejará pasar a quien traiga los tres fragmentos del valle.</p><div class="quest-progress"><span id="resource-label">CRISTALES</span><b id="resource-count">0 / 3</b></div><div class="crystal-track" id="crystal-track"><i></i><i></i><i></i></div><div class="quest-step"><span>1</span><p id="quest-step-one">Explora el bosque y recoge sus cristales.</p></div><div class="quest-step"><span>2</span><p id="quest-step-two">Guía a Luma hasta el guardián del santuario.</p></div></section>
-        <section class="side-card companion-card"><div class="card-label"><span>COMPAÑERA</span><span class="level-badge" id="level-badge">NIVEL 01</span></div><div class="companion-head"><span class="companion-portrait"><i></i><b></b><em></em></span><div><h2>Luma</h2><span>ESPÍRITU DE LUZ</span></div></div><div class="stat-row"><span>ENERGÍA</span><b id="hp-side-label">24 / 24</b></div><div class="stat-track"><i id="hp-side-bar"></i></div><div class="stat-row xp-row"><span>EXPERIENCIA</span><b id="xp-label">0 / 3</b></div><div class="xp-track"><i id="xp-bar"></i></div><div class="inventory"><span>MOCHILA</span><div><span class="inventory-crystal" id="inventory-resource-symbol">✦ <b id="inventory-crystals">0</b></span><span class="inventory-potion">✚ <b id="inventory-potions">2</b></span><span class="inventory-herb">❋ <b id="inventory-herbs">0</b></span></div></div></section>
-        <section class="side-card journal-card"><div class="card-label"><span>DIARIO DE VIAJE</span><span>◷</span></div><p id="journal-entry">Luma llegó al borde del valle. La bruma oculta más de lo que parece.</p><button type="button" id="restart-button" class="restart-button">↻ <span>Reiniciar aventura</span></button></section>
+        <section class="side-card companion-card"><div class="card-label"><span>COMPAÑERA</span><span class="level-badge" id="level-badge">NIVEL 01</span></div><div class="companion-head"><span class="companion-portrait"><i></i><b></b><em></em></span><div><h2>Luma</h2><span>ESPÍRITU DE LUZ</span></div></div><div class="stat-row"><span>ENERGÍA</span><b id="hp-side-label">24 / 24</b></div><div class="stat-track"><i id="hp-side-bar"></i></div><div class="stat-row xp-row"><span>EXPERIENCIA</span><b id="xp-label">0 / 3</b></div><div class="xp-track"><i id="xp-bar"></i></div><div class="inventory" id="open-inventory" role="button" tabindex="0" aria-label="Abrir mochila, tecla I"><span>MOCHILA</span><div><span class="inventory-crystal" id="inventory-resource-symbol">✦ <b id="inventory-crystals">0</b></span><span class="inventory-potion">✚ <b id="inventory-potions">2</b></span><span class="inventory-herb">❋ <b id="inventory-herbs">0</b></span></div></div></section>
+        <section class="side-card journal-card"><div class="card-label"><span>DIARIO DE VIAJE</span><span id="open-bestiary" role="button" tabindex="0" aria-label="Abrir guía de criaturas, tecla B">◷</span></div><p id="journal-entry">Luma llegó al borde del valle. La bruma oculta más de lo que parece.</p><button type="button" id="restart-button" class="restart-button">↻ <span>Reiniciar aventura</span></button></section>
       </aside>
     </section>
 
     <footer class="page-footer"><span>RAÍCES DE BRUMA <b>© 2026</b></span><span>EXPLORA · COMBATE · DESCUBRE</span><span>HTML · CSS · VANILLA JS</span></footer>
+
+    <section class="feature-backdrop" id="inventory-modal" hidden>
+      <section class="feature-panel" role="dialog" aria-modal="true" aria-labelledby="inventory-title" tabindex="-1">
+        <div class="feature-heading"><div><span class="feature-kicker">EQUIPO DE LUMA</span><h2 id="inventory-title">La mochila</h2></div><button type="button" class="feature-close" data-close-modal aria-label="Cerrar mochila">×</button></div>
+        <div class="feature-tabs" role="tablist" aria-label="Secciones de la mochila"><button type="button" data-bag-tab="materials" class="is-selected" role="tab" aria-selected="true">RECURSOS</button><button type="button" data-bag-tab="items" role="tab" aria-selected="false">OBJETOS</button><button type="button" data-bag-tab="tools" role="tab" aria-selected="false">HERRAMIENTAS</button></div>
+        <div class="feature-list" id="inventory-list"></div>
+        <p class="feature-hint" id="inventory-hint">Los recursos de esta zona se reinician al comenzar el siguiente capítulo.</p>
+      </section>
+    </section>
+
+    <section class="feature-backdrop" id="bestiary-modal" hidden>
+      <section class="feature-panel feature-bestiary" role="dialog" aria-modal="true" aria-labelledby="bestiary-title" tabindex="-1">
+        <div class="feature-heading"><div><span class="feature-kicker">ARCHIVO DEL VALLE · <b id="bestiary-count">0 / 9</b></span><h2 id="bestiary-title">Guía de criaturas</h2></div><button type="button" class="feature-close" data-close-modal aria-label="Cerrar guía">×</button></div>
+        <p class="feature-hint">Observa una criatura en combate para completar su registro.</p>
+        <div class="bestiary-grid" id="bestiary-grid"></div>
+      </section>
+    </section>
   </main>
 </body>
 </html>
