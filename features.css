@@ -50,3 +50,6 @@ body.feature-open .feature-panel{outline:none}
 @media(max-width:930px){.bestiary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.feature-backdrop{padding:10px}.feature-panel{padding:15px;max-height:92vh}.feature-heading h2{font-size:23px}.feature-entry{grid-template-columns:32px minmax(0,1fr) auto;gap:8px;padding:8px}.feature-entry-icon{width:31px;height:31px}.feature-entry-copy p{font-size:8px}.feature-action{grid-column:2/-1;justify-self:end}.bestiary-grid{gap:6px}.bestiary-entry{padding:9px 6px}.bestiary-entry p{font-size:7px}.bestiary-stats{font-size:5px}}
 #open-inventory,#open-bestiary{cursor:pointer}
+/* REGLA C: fondo rojo claro durante el turno congelado. Se declara aquí (se carga después de styles.css)
+   y con mayor especificidad para que ningún bioma (cueva, cumbre) lo oculte. */
+body.body-alert,body.body-alert.biome-cave,body.body-alert.biome-peak{background-color:#5a1219;background-image:radial-gradient(ellipse at 50% 45%,#c8323f66,transparent 70%),radial-gradient(ellipse at 45% 0%,#a02a3566,transparent 56%)}

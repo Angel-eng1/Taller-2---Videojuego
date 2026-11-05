@@ -1,10 +1,31 @@
-// Raíces de Bruma: RPG de exploración por casillas y combate por turnos.
+/* RAÍCES DE BRUMA: RPG de exploración por casillas y combate por turnos.
+
+   MAPA DE CONCEPTOS DEL TALLER
+   1. Variables y tipos primitivos: `player` y `game` (números, strings, booleanos, null).
+   2. Estructuras de control: movePlayer, performBattleAction, finishBattle (if / else if / else y ternarios).
+   3. Arreglos: game.tiles (matriz 2D), chapters[].walls / relics / traps, game.discoveredCreatures.
+   4. Objetos literales: player, game, chapters, enemyTypes, tilePresentation.
+   5. Funciones: declaradas (movePlayer, buildWorld...) y flecha (callbacks de eventos y de arreglos).
+   6. Eventos del navegador: keydown (teclado) y click (movimiento, mochila, combate, reinicio).
+   7. Manipulación del DOM: renderWorld, updatePlayerPanel (createElement, textContent, replaceChildren).
+
+   REGLA C: en cada mapa hay una casilla 'trap' dentro del arreglo game.tiles. Al pisarla no suma
+   puntos ni experiencia, congela el siguiente turno (game.skipNextTurn) y el fondo de la pantalla
+   se vuelve rojo (clase body-alert) hasta que ese turno se resuelve (resolveSkippedTurn).
+
+   El estado del juego vive solo en las variables de JavaScript; el DOM únicamente lo muestra. */
 'use strict';
 
+// Variables y tipos primitivos (constantes numéricas)
 const mapSize = { width: 13, height: 9 };
-const player = { x: 1, y: 1, hp: 24, maxHp: 24, level: 1, xp: 0, fragments: 0, potions: 2, herbs: 0 };
-const game = { tiles: [], turn: 1, chapterIndex: 0, skipNextTurn: false, alertActive: false, inBattle: false, completed: false, chapterComplete: false, battle: null, discoveredCreatures: [], activeModal: null, inventoryTab: 'materials' };
 
+// Objeto literal con el estado del personaje (números)
+const player = { x: 1, y: 1, hp: 24, maxHp: 24, level: 1, xp: 0, fragments: 0, potions: 2, herbs: 0 };
+
+// Objeto literal con el estado global (booleanos, números, arreglos, strings y null)
+const game = { tiles: [], turn: 1, chapterIndex: 0, skipNextTurn: false, alertActive: false, inBattle: false, completed: false, chapterComplete: false, battle: null, discoveredCreatures: [], activeModal: null, modalOpener: null, inventoryTab: 'materials' };
+
+// Arreglo de objetos literales: un objeto por capítulo. Las coordenadas son arreglos [x, y].
 const chapters = [
   {
     name: 'El Valle Antiguo', shortName: 'EL VALLE', region: 'BOSQUE DEL VALLE', zone: 'Sendero de los ecos', weather: 'BRUMA LIGERA', weatherIcon: '☼', biome: 'valley',
@@ -23,7 +44,7 @@ const chapters = [
     objectiveTitle: 'Silencia la caverna.', objective: 'Reúne tres ecos resonantes para abrir la cámara del corazón de piedra.',
     stepOne: 'Busca los ecos entre las columnas de cristal.', stepTwo: 'Vence al Gólem de Eco en la cámara profunda.',
     ending: 'La cueva vuelve a cantar.', endingCopy: 'Luma calmó la resonancia y el camino bajo la montaña se abrió.',
-    walls: [[3,1],[8,1],[5,2],[10,2],[3,4],[7,4],[9,5],[4,7],[8,7]], breakables: [[7,4]],
+    walls: [[3,1],[8,1],[5,2],[10,2],[3,4],[9,5],[4,7],[8,7]], breakables: [[7,4]],
     grass: [[2,2],[4,2],[8,3],[2,5],[6,6],[10,6]],
     relics: [[2,4],[6,2],[10,4]], herbs: [[4,5],[9,6]], traps: [[6,5]],
     creatures: [[4,3,'echoWisp'],[9,3,'caveBat']], signs: [[1,6]], bossAt: [11,1]
@@ -34,13 +55,14 @@ const chapters = [
     objectiveTitle: 'Disipa la gran bruma.', objective: 'Encuentra los tres sellos de altura y alcanza la cima para desafiar a la reina de la niebla.',
     stepOne: 'Recorre las terrazas y reúne los sellos.', stepTwo: 'Vence a la Reina de Bruma en la cumbre.',
     ending: 'El cielo se abre.', endingCopy: 'Luma rompió el último sello de la bruma. El valle queda libre y la aventura llega a su fin.',
-    walls: [[3,1],[7,1],[10,2],[4,3],[8,3],[2,5],[6,5],[9,6],[4,7],[7,7]], breakables: [[4,3]],
+    walls: [[3,1],[7,1],[10,2],[8,3],[2,5],[6,5],[9,6],[4,7],[7,7]], breakables: [[4,3]],
     grass: [[2,2],[6,2],[9,3],[3,4],[7,4],[10,5],[2,6],[5,6]],
     relics: [[5,1],[9,4],[3,6]], herbs: [[2,4],[10,6]], traps: [[6,6]],
     creatures: [[4,2,'ridgeWolf'],[8,5,'frostWisp']], signs: [[1,6]], bossAt: [11,1]
   }
 ];
 
+// Referencias al DOM (solo para mostrar información, nunca para guardar el estado)
 const ui = {
   grid: document.querySelector('#world-grid'),
   worldCard: document.querySelector('.world-card'),
@@ -70,6 +92,7 @@ const ui = {
   bestiaryGrid: document.querySelector('#bestiary-grid')
 };
 
+// Objeto literal con las definiciones de criaturas (cada propiedad es un objeto literal)
 const enemyTypes = {
   moss: { name: 'Musguito', sprite: 'moss', element: 'Tierra', weakness: 'Luz', habitat: 'El Valle Antiguo', lore: 'Un pequeño guardián que brota en los senderos húmedos.', maxHp: 13, minDamage: 2, maxDamage: 4, xp: 1, isBoss: false },
   bramble: { name: 'Zarzal', sprite: 'bramble', element: 'Espina', weakness: 'Luz', habitat: 'El Valle Antiguo', lore: 'Protege los claros cubiertos de raíces retorcidas.', maxHp: 17, minDamage: 3, maxDamage: 5, xp: 1, isBoss: false },
@@ -82,10 +105,12 @@ const enemyTypes = {
   mistQueen: { name: 'Reina de Bruma', sprite: 'mist-queen', element: 'Bruma', weakness: 'Luz', habitat: 'La Cumbre de Bruma', lore: 'La guardiana final. Su niebla cubrió los caminos del valle.', maxHp: 38, minDamage: 5, maxDamage: 7, xp: 3, isBoss: true }
 };
 
+// Función declarada que crea una casilla (objeto literal con valores por defecto)
 function makeTile(type = 'floor', extra = {}) {
   return { type, visited: false, revealed: false, ...extra };
 }
 
+// Construye la matriz 2D game.tiles con bucles anidados y la llena con los arreglos del capítulo
 function buildWorld() {
   game.tiles = [];
   const chapter = chapters[game.chapterIndex];
@@ -98,6 +123,8 @@ function buildWorld() {
     game.tiles.push(row);
   }
 
+  // Arreglo de objetos creado con funciones flecha (map) a partir de los arreglos del capítulo.
+  // REGLA C: chapter.traps coloca la casilla trampa dentro del arreglo lógico.
   const features = [
     ...chapter.walls.map(([x, y]) => ({ x, y, type: 'wall' })),
     ...chapter.breakables.map(([x, y]) => ({ x, y, type: 'breakable', breakable: true })),
@@ -116,6 +143,7 @@ function buildWorld() {
   game.tiles[1][1].visited = true;
 }
 
+// Objeto literal que asocia cada tipo de casilla con su apariencia
 const tilePresentation = {
   wall: { glyph: '♣', className: 'is-wall', label: 'árbol' },
   breakable: { glyph: '', className: 'is-breakable', label: 'tronco caído' },
@@ -130,6 +158,7 @@ const tilePresentation = {
   sign: { glyph: '?', className: 'is-exit', label: 'inscripción antigua' }
 };
 
+// DOM: dibuja el mapa a partir de game.tiles (el estado manda, el DOM solo lo refleja)
 function renderWorld() {
   const fragment = document.createDocumentFragment();
   const chapter = chapters[game.chapterIndex];
@@ -172,6 +201,7 @@ function renderWorld() {
         object.setAttribute('aria-hidden', 'true');
         cell.append(object);
       } else if (tile.type === 'trap' && tile.revealed) {
+        // La trampa solo se ve si el farol la reveló
         cell.classList.add('is-trap-revealed');
         const trap = document.createElement('span');
         trap.className = 'map-object map-object-trap';
@@ -189,6 +219,7 @@ function renderWorld() {
   updateToolAvailability();
 }
 
+// DOM: refresca los marcadores del panel lateral con los valores de `player`
 function updatePlayerPanel() {
   const chapter = chapters[game.chapterIndex];
   const hpPercent = Math.max(0, (player.hp / player.maxHp) * 100);
@@ -221,6 +252,7 @@ function updateBestiaryCount() {
   if (count) count.textContent = `${game.discoveredCreatures.length} / ${Object.keys(enemyTypes).length}`;
 }
 
+// DOM: dibuja la guía de criaturas usando el arreglo game.discoveredCreatures
 function renderBestiary() {
   if (!ui.bestiaryGrid) return;
   const fragment = document.createDocumentFragment();
@@ -248,6 +280,7 @@ function renderBestiary() {
   updateBestiaryCount();
 }
 
+// DOM: dibuja la pestaña activa de la mochila (objeto literal de arreglos de objetos)
 function renderInventoryTab() {
   if (!ui.inventoryList) return;
   const chapter = chapters[game.chapterIndex];
@@ -333,6 +366,7 @@ function consumeTurn() {
   ui.turnCount.textContent = `TURNO ${String(game.turn).padStart(2, '0')}`;
 }
 
+// REGLA C: resuelve el turno congelado por la trampa y quita la alerta roja (clase body-alert)
 function resolveSkippedTurn() {
   consumeTurn();
   game.skipNextTurn = false;
@@ -376,6 +410,7 @@ function updateToolAvailability() {
 
 function activatePickaxe() {
   if (game.inBattle || game.completed) return;
+  // REGLA C: si el turno está congelado, esta acción lo consume
   if (game.skipNextTurn) { resolveSkippedTurn(); return; }
   const tile = adjacentBreakableTile();
   if (!tile) {
@@ -392,6 +427,7 @@ function activatePickaxe() {
 
 function activateLantern() {
   if (game.inBattle || game.completed) return;
+  // REGLA C: si el turno está congelado, esta acción lo consume
   if (game.skipNextTurn) { resolveSkippedTurn(); return; }
   const traps = [];
   game.tiles.forEach((row, y) => row.forEach((tile, x) => {
@@ -415,6 +451,7 @@ function usePotionFromInventory() {
     return;
   }
   if (game.completed || player.potions <= 0 || player.hp >= player.maxHp) return;
+  // REGLA C: si el turno está congelado, esta acción lo consume
   if (game.skipNextTurn) { resolveSkippedTurn(); return; }
   consumeTurn();
   player.potions -= 1;
@@ -425,8 +462,10 @@ function usePotionFromInventory() {
   renderInventoryTab();
 }
 
+// Movimiento: condicionales para colisiones, objetos, trampa, encuentros y guardián
 function movePlayer(direction) {
   if (game.inBattle || game.completed) return;
+  // REGLA C: el turno congelado se gasta aquí en vez de mover a Luma
   if (game.skipNextTurn) {
     resolveSkippedTurn();
     return;
@@ -470,6 +509,8 @@ function movePlayer(direction) {
     updatePlayerPanel();
     setWorldMessage('Encontraste una hierba curativa. Luma la guardó como una poción.', 'Una planta de luz crecía entre las raíces.');
   } else if (tile.type === 'trap') {
+    // REGLA C: la casilla trampa no suma puntos ni experiencia; congela el siguiente turno
+    // (skipNextTurn) y activa el fondo rojo (body-alert) hasta resolver ese turno.
     tile.type = 'spentTrap';
     tile.visited = true;
     game.skipNextTurn = true;
@@ -492,9 +533,8 @@ function movePlayer(direction) {
   renderWorld();
 }
 
-function randomDamage(minimum, maximum) {
-  return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-}
+// Función flecha: número entero aleatorio entre mínimo y máximo
+const randomDamage = (minimum, maximum) => Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
 
 function startBattle(enemyId, x, y, origin) {
   const definition = enemyTypes[enemyId];
@@ -529,16 +569,21 @@ function renderBattleBars() {
   document.querySelector('[data-action="potion"]').disabled = player.potions <= 0 || player.hp >= player.maxHp;
 }
 
+// Suma experiencia y devuelve true si Luma subió de nivel (el estado se decide con variables,
+// no leyendo texto del DOM)
 function awardExperience(amount) {
+  let leveledUp = false;
   player.xp += amount;
   if (player.xp >= 3) {
     player.xp -= 3;
     player.level += 1;
     player.maxHp += 4;
     player.hp = Math.min(player.maxHp, player.hp + 8);
+    leveledUp = true;
     document.querySelector('#battle-message').textContent = `¡Luma subió al nivel ${player.level}! Su energía máxima aumentó.`;
   }
   updatePlayerPanel();
+  return leveledUp;
 }
 
 function finishBattle(won, fled = false) {
@@ -551,7 +596,7 @@ function finishBattle(won, fled = false) {
     game.tiles[battle.y][battle.x] = makeTile('floor', { visited: true });
     player.x = battle.x;
     player.y = battle.y;
-    awardExperience(battle.xp);
+    const leveledUp = awardExperience(battle.xp);
     if (battle.isBoss) {
       game.chapterComplete = true;
       game.completed = game.chapterIndex === chapters.length - 1;
@@ -566,7 +611,7 @@ function finishBattle(won, fled = false) {
         ui.nextChapter.textContent = `CONTINUAR AL CAPÍTULO ${String(game.chapterIndex + 2).padStart(2, '0')} ↗`;
       }
       setWorldMessage(chapter.ending, chapter.endingCopy);
-    } else if (document.querySelector('#battle-message').textContent.startsWith('¡Luma subió')) {
+    } else if (leveledUp) {
       document.querySelector('#battle-message').textContent += ` ${battle.name} se retiró. Ganaste ${battle.xp} punto(s) de experiencia.`;
     } else {
       document.querySelector('#battle-message').textContent = `${battle.name} se retiró. Ganaste ${battle.xp} punto(s) de experiencia.`;
@@ -605,6 +650,7 @@ function enemyCounterattack() {
   if (player.hp <= 0) finishBattle(false);
 }
 
+// Combate por turnos: cada acción se resuelve con condicionales y luego contraataca el enemigo
 function performBattleAction(action) {
   if (!game.inBattle || !game.battle) return;
   const battle = game.battle;
@@ -648,6 +694,7 @@ function continueExploration() {
   renderWorld();
 }
 
+// Prepara un capítulo: reinicia variables de estado, actualiza textos del DOM y reconstruye el mapa
 function launchChapter(index, freshStart = false) {
   const chapter = chapters[index];
   game.chapterIndex = index;
@@ -716,11 +763,14 @@ function resetAdventure() {
   updateBestiaryCount();
 }
 
+// EVENTOS DEL NAVEGADOR: click en el control direccional
 document.querySelectorAll('[data-move]').forEach(button => {
   button.addEventListener('click', () => movePlayer(button.dataset.move));
 });
+// EVENTOS: click para abrir la mochila y la guía de criaturas
 document.querySelector('#open-inventory').addEventListener('click', event => openModal('inventory', event.currentTarget));
 document.querySelector('#open-bestiary').addEventListener('click', event => openModal('bestiary', event.currentTarget));
+// EVENTOS: teclado (Enter o espacio) en los controles que funcionan como botones
 document.querySelectorAll('#open-inventory, #open-bestiary').forEach(control => {
   control.addEventListener('keydown', event => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -746,6 +796,7 @@ ui.inventoryList.addEventListener('click', event => {
   if (action === 'lantern') activateLantern();
   renderInventoryTab();
 });
+// EVENTOS: teclado (flechas, WASD, I, B, P, L, Esc)
 document.addEventListener('keydown', event => {
   if (game.activeModal) {
     if (event.key === 'Escape') closeModal();
@@ -762,6 +813,7 @@ document.addEventListener('keydown', event => {
     movePlayer(direction);
   }
 });
+// EVENTOS: click en las acciones de combate
 document.querySelectorAll('[data-action]').forEach(button => {
   button.addEventListener('click', () => performBattleAction(button.dataset.action));
 });
@@ -770,5 +822,6 @@ ui.nextChapter.addEventListener('click', advanceChapter);
 document.querySelector('#restart-button').addEventListener('click', resetAdventure);
 document.querySelector('#ending-restart').addEventListener('click', resetAdventure);
 
+// Inicio de la aventura
 launchChapter(0, true);
 updateBestiaryCount();
