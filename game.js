@@ -12,9 +12,9 @@ const chapters = [
     objectiveTitle: 'Despierta el santuario.', objective: 'El guardián solo dejará pasar a quien traiga los tres fragmentos del valle.',
     stepOne: 'Explora el bosque y recoge sus cristales.', stepTwo: 'Guía a Luma hasta el guardián del santuario.',
     ending: 'El valle respira.', endingCopy: 'Luma reunió los cristales y devolvió la luz al bosque.',
-    walls: [[3,1],[7,1],[5,2],[9,2],[5,3],[10,3],[2,5],[8,5],[4,7],[7,7]], breakables: [[5,3]],
+    walls: [[3,1],[7,1],[5,2],[9,2],[5,3],[10,3],[2,5],[8,5],[4,7],[7,7],[10,7]], breakables: [[11,6]],
     grass: [[2,2],[3,2],[7,3],[8,4],[10,5],[2,6],[6,6],[9,6]],
-    relics: [[4,1],[9,3],[3,6]], herbs: [[4,4],[10,6]], traps: [[6,5]],
+    relics: [[4,1],[9,3],[3,6]], herbs: [[4,4],[10,6],[11,7]], traps: [[6,5]],
     creatures: [[4,3,'moss'],[9,5,'bramble']], signs: [[1,5]], bossAt: [11,1]
   },
   {
@@ -100,7 +100,7 @@ function buildWorld() {
 
   const features = [
     ...chapter.walls.map(([x, y]) => ({ x, y, type: 'wall' })),
-    ...chapter.breakables.map(([x, y]) => ({ x, y, type: 'wall', breakable: true })),
+    ...chapter.breakables.map(([x, y]) => ({ x, y, type: 'breakable', breakable: true })),
     ...chapter.grass.map(([x, y]) => ({ x, y, type: 'grass' })),
     ...chapter.relics.map(([x, y]) => ({ x, y, type: 'relic' })),
     ...chapter.herbs.map(([x, y]) => ({ x, y, type: 'herb' })),
@@ -118,6 +118,7 @@ function buildWorld() {
 
 const tilePresentation = {
   wall: { glyph: '♣', className: 'is-wall', label: 'árbol' },
+  breakable: { glyph: '', className: 'is-breakable', label: 'tronco caído' },
   floor: { glyph: '', className: 'is-path', label: 'sendero' },
   grass: { glyph: '·', className: 'is-grass', label: 'hierba' },
   relic: { glyph: '', className: 'is-relic', label: 'fragmento' },
@@ -155,6 +156,12 @@ function renderWorld() {
         tree.className = 'map-tree';
         tree.setAttribute('aria-hidden', 'true');
         cell.append(tree);
+      } else if (tile.type === 'breakable') {
+        const trunk = document.createElement('span');
+        trunk.className = 'map-object-breakable';
+        trunk.setAttribute('aria-hidden', 'true');
+        trunk.append(document.createElement('i'), document.createElement('b'));
+        cell.append(trunk);
       } else if (tile.type === 'creature' || tile.type === 'boss') {
         const enemyId = tile.type === 'boss' ? chapter.boss : tile.enemy;
         cell.append(makeCharacterSprite(enemyTypes[enemyId].sprite));
@@ -173,7 +180,7 @@ function renderWorld() {
         cell.append(trap);
       }
       cell.setAttribute('role', 'gridcell');
-      const label = tile.type === 'relic' ? chapter.resource : (tile.type === 'trap' && tile.revealed ? 'trampa oculta' : (tile.breakable ? 'árbol que se puede retirar con el pico' : presentation.label));
+      const label = tile.type === 'relic' ? chapter.resource : (tile.type === 'trap' && tile.revealed ? 'trampa oculta' : presentation.label);
       cell.setAttribute('aria-label', isPlayer ? `Luma y tú, ${label}` : label);
       fragment.append(cell);
     });
@@ -253,7 +260,7 @@ function renderInventoryTab() {
       { icon: '✚', name: 'Poción de luz', quantity: player.potions, description: 'Recupera hasta 8 puntos de energía.', action: 'potion', disabled: player.potions <= 0 || game.completed || player.hp >= player.maxHp }
     ],
     tools: [
-      { icon: '⌁', name: 'Pico de explorador', quantity: 'EQUIPADO', description: 'Retira un árbol cercano para abrir un atajo.', action: 'pickaxe', disabled: !canUsePickaxe() },
+      { icon: '⌁', name: 'Pico de explorador', quantity: 'EQUIPADO', description: 'Rompe un tronco caído y abre un paso bloqueado.', action: 'pickaxe', disabled: !canUsePickaxe() },
       { icon: '◉', name: 'Farol de luciérnaga', quantity: 'EQUIPADO', description: 'Revela trampas ocultas hasta cuatro pasos alrededor de Luma.', action: 'lantern', disabled: !canUseLantern() }
     ]
   };
@@ -341,7 +348,7 @@ function adjacentBreakableTile() {
   const nearby = [[0, -1], [1, 0], [0, 1], [-1, 0]];
   for (const [dx, dy] of nearby) {
     const tile = game.tiles[player.y + dy]?.[player.x + dx];
-    if (tile?.type === 'wall' && tile.breakable) return tile;
+    if (tile?.type === 'breakable') return tile;
   }
   return null;
 }
@@ -372,7 +379,7 @@ function activatePickaxe() {
   if (game.skipNextTurn) { resolveSkippedTurn(); return; }
   const tile = adjacentBreakableTile();
   if (!tile) {
-    setWorldMessage('Acércate a un árbol que pueda retirarse con el pico.', 'No hay un árbol marcado al alcance del pico.');
+    setWorldMessage('Acércate a un tronco caído para despejar el paso.', 'El pico solo puede romper los troncos que bloquean el sendero.');
     return;
   }
   consumeTurn();
@@ -434,8 +441,8 @@ function movePlayer(direction) {
     setWorldMessage('Los árboles son demasiado densos por aquí. Busca otro camino.', 'El bosque cierra ese paso.');
     return;
   }
-  if (tile.type === 'wall' && tile.breakable) {
-    setWorldMessage('Este árbol está marcado. Usa el pico para abrir el paso.', 'El pico puede retirar este árbol sin alterar el aspecto del bosque.');
+  if (tile.type === 'breakable') {
+    setWorldMessage('Un tronco caído bloquea el paso. Usa el pico para romperlo.', 'El sendero está bloqueado por un tronco caído.');
     return;
   }
   const chapter = chapters[game.chapterIndex];

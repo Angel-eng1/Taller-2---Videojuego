@@ -1,6 +1,15 @@
 .feature-backdrop[hidden]{display:none!important}
 .map-cell.is-trap-revealed{background:#513638;border-color:#df756c;color:#ffd2bb}
 .map-object-trap{width:60%;height:60%;border:1px solid #ff9486;border-radius:50%;background:#762f37;color:#fff;font:bold 12px var(--mono);box-shadow:0 0 11px #ef686388}
+.map-cell.is-breakable{background:#394439;border-color:#b69b65;box-shadow:inset 0 0 0 1px #493d2c}
+.map-object-breakable{position:relative;z-index:1;display:block;width:72%;height:18%;border:1px solid #a98757;border-radius:7px;background:linear-gradient(180deg,#bd9861,#76533a 72%,#55402f);box-shadow:0 2px 0 #392d25;transform:rotate(-32deg)}
+.map-object-breakable::before,.map-object-breakable::after{content:"";position:absolute;top:-3px;width:30%;height:3px;border-radius:3px;background:#718b55}
+.map-object-breakable::before{left:14%;transform:rotate(-36deg)}
+.map-object-breakable::after{right:12%;transform:rotate(34deg)}
+.map-object-breakable i,.map-object-breakable b{position:absolute;top:0;width:5px;height:100%;border-radius:50%;background:#d1ad70}
+.map-object-breakable i{left:-1px}.map-object-breakable b{right:-1px}
+.biome-cave .map-cell.is-breakable{background:#31323d;border-color:#8d82a4}
+.biome-peak .map-cell.is-breakable{background:#35464a;border-color:#a2b6b0}
 .feature-backdrop{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:#080d0dda;backdrop-filter:blur(7px)}
 .feature-panel{width:min(650px,100%);max-height:min(86vh,760px);overflow:auto;padding:22px;border:1px solid #526353;border-radius:6px;background:linear-gradient(145deg,#202c30,#151e26);box-shadow:0 25px 90px #0009;outline:none}
 .feature-panel:focus{outline:none}
