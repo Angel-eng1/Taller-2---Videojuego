@@ -179,3 +179,17 @@ body.body-alert,body.body-alert.biome-cave,body.body-alert.biome-peak{background
 .dialogue-button:hover:not(:disabled){border-color:var(--green);color:var(--green)}
 .dialogue-button.is-primary{border-color:#708354;background:#344530;color:#d7ecad}
 .dialogue-button:disabled{opacity:.4;cursor:default}
+
+/* Ajusta los textos pequeños de mochila, combate y guía para que se lean sin zoom. */
+.enemy-element-label{font-size:8px!important}
+.feature-kicker,.skill-menu-heading{font-size:8px}
+.feature-tabs button,.feature-action,.skill-back,.dialogue-button{font-size:8px}
+.feature-entry-copy h3,.bestiary-entry h3{font-size:12px}
+.feature-entry-copy p,.feature-hint,.bestiary-entry p,.skill-option>span{font-size:10px}
+.feature-quantity,.gear-equipped-line,.gear-bonus-summary{font-size:9px}
+.bestiary-element,.skill-option small,.status-chip small{font-size:7px}
+.bestiary-stats{font-size:7px}
+.side-quest-line,.dialogue-quest{font-size:9px}
+.skill-option b{font-size:11px}
+.status-chip{font-size:8px}
+@media(max-width:570px){.feature-entry-copy p,.feature-hint,.bestiary-entry p,.skill-option>span{font-size:9px}}
