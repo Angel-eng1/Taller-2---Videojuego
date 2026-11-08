@@ -50,6 +50,132 @@ body.feature-open .feature-panel{outline:none}
 @media(max-width:930px){.bestiary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.feature-backdrop{padding:10px}.feature-panel{padding:15px;max-height:92vh}.feature-heading h2{font-size:23px}.feature-entry{grid-template-columns:32px minmax(0,1fr) auto;gap:8px;padding:8px}.feature-entry-icon{width:31px;height:31px}.feature-entry-copy p{font-size:8px}.feature-action{grid-column:2/-1;justify-self:end}.bestiary-grid{gap:6px}.bestiary-entry{padding:9px 6px}.bestiary-entry p{font-size:7px}.bestiary-stats{font-size:5px}}
 #open-inventory,#open-bestiary{cursor:pointer}
+.enemy-element-label{color:var(--gold);font-size:6px!important;letter-spacing:.04em}
+.focus-row{margin-top:10px}
+.focus-track{width:100%;height:5px;margin:6px 0 11px;overflow:hidden;border-radius:3px;background:#3a3429}
+.focus-track i{display:block;width:100%;height:100%;border-radius:3px;background:var(--gold)}
+.battle-focus-track{max-width:105px;margin:4px 0 0}
+.battle-focus-label{color:var(--gold)!important}
+.skill-menu{margin-top:8px;padding:10px;border:1px solid #465448;border-radius:4px;background:#1c2828}
+.feature-tabs{flex-wrap:wrap}
+.skill-menu-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:var(--gold);font:7px var(--mono);letter-spacing:.1em}
+.skill-back{border:1px solid #526353;border-radius:3px;padding:6px 9px;background:#25332e;color:#c5d0c5;font:7px var(--mono);cursor:pointer}
+.skill-back:hover{border-color:var(--green);color:var(--green)}
+.skill-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.skill-option{min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start;border:1px solid #52604e;border-radius:3px;padding:9px;background:#26342e;color:#d7e1d1;text-align:left;cursor:pointer}
+.skill-option:hover:not(:disabled){border-color:var(--gold);background:#303b32}
+.skill-option b{font:600 10px var(--display)}
+.skill-option small{color:var(--gold);font:6px var(--mono);letter-spacing:.06em}
+.skill-option>span{color:#9ba99e;font-size:8px;line-height:1.35}
+.skill-option:disabled{opacity:.48;cursor:not-allowed}
+.skill-option.is-locked{border-style:dashed}
+.active-statuses{min-height:0;display:flex;justify-content:center;gap:4px;flex-wrap:wrap;width:100%;margin:2px 0}
+.active-statuses:empty{display:none}
+.status-chip{display:inline-flex;align-items:center;gap:3px;border:1px solid #73614a;border-radius:9px;padding:2px 6px;background:#342f2a;color:var(--gold);font:7px var(--mono)}
+.status-chip small{color:#e5ded0;font:6px var(--mono)}
+.status-veneno{border-color:#7e5149;background:#3b2929;color:#e89b7e}
+.status-congelado{border-color:#547789;background:#26343d;color:#9bd7ec}
+.status-aturdido{border-color:#78674c;background:#383227;color:#e8cf7f}
+#enemy-health,#player-health,#hp-side-bar,#xp-bar{transition:width .35s ease}
+.battle-arena{position:relative}
+.creature-enemy.is-hit,.creature-player.is-hit{animation:combat-shake .32s ease}
+.character-sprite.is-effective{animation:enemy-effective-flash .68s ease}
+.character-sprite.is-healing,.companion-portrait.is-healing{animation:healing-pulse .7s ease}
+.level-badge.is-level-up,.companion-portrait.is-level-up{animation:level-up-glow .8s ease}
+.creature-enemy.is-defeated{transform-origin:center bottom;animation:enemy-defeat .62s ease forwards;pointer-events:none}
+.status-chip.is-status-applied{animation:status-notice .38s ease}
+.battle-message.is-status-applied{animation:status-message .42s ease}
+.floating-number{position:absolute;z-index:8;top:27px;pointer-events:none;font:600 13px var(--mono);letter-spacing:.03em;text-shadow:0 2px 5px #000b;animation:floating-number-rise .86s ease-out both}
+.floating-number--enemy{left:25%}
+.floating-number--player{left:75%}
+.floating-number--damage{color:var(--red)}
+.floating-number--effective{color:var(--gold);text-shadow:0 0 9px #f2ce78aa,0 2px 5px #000b}
+.floating-number--healing{color:var(--mint);text-shadow:0 0 9px #8ce6c6aa,0 2px 5px #000b}
+@keyframes combat-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes enemy-effective-flash{0%,100%{filter:drop-shadow(0 6px 5px #0007)}35%{filter:drop-shadow(0 0 12px #ff625f) brightness(1.65)}65%{filter:drop-shadow(0 0 7px #ff625f) brightness(1.25)}}
+@keyframes healing-pulse{0%,100%{filter:drop-shadow(0 0 0 #66e1ac00)}45%{filter:drop-shadow(0 0 15px #66e1ac) brightness(1.45)}}
+@keyframes level-up-glow{0%,100%{filter:drop-shadow(0 0 0 #f2ce7800)}40%,70%{filter:drop-shadow(0 0 11px #f2ce78) brightness(1.45)}}
+@keyframes enemy-defeat{0%{opacity:1;transform:scale(1) translateY(0);filter:grayscale(0)}45%{opacity:.8;transform:scale(.88) translateY(5px);filter:grayscale(.5)}100%{opacity:0;transform:scale(.55) translateY(12px);filter:grayscale(1)}}
+@keyframes floating-number-rise{0%{opacity:0;transform:translate(-50%,7px) scale(.82)}15%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-35px) scale(1.08)}}
+@keyframes status-notice{0%,100%{transform:scale(1)}45%{transform:scale(1.16);box-shadow:0 0 10px currentColor}}
+@keyframes status-message{0%,100%{color:#b9c6b8}45%{color:var(--gold);text-shadow:0 0 10px #f2ce7866}}
+@media(max-width:570px){.skill-options{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){
+  #enemy-health,#player-health,#hp-side-bar,#xp-bar{transition:none}
+  .creature-enemy.is-hit,.creature-player.is-hit,.character-sprite.is-effective,.character-sprite.is-healing,.companion-portrait.is-healing,.level-badge.is-level-up,.companion-portrait.is-level-up,.creature-enemy.is-defeated,.status-chip.is-status-applied,.battle-message.is-status-applied,.floating-number{animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
 /* REGLA C: fondo rojo claro durante el turno congelado. Se declara aquí (se carga después de styles.css)
    y con mayor especificidad para que ningún bioma (cueva, cumbre) lo oculte. */
 body.body-alert,body.body-alert.biome-cave,body.body-alert.biome-peak{background-color:#5a1219;background-image:radial-gradient(ellipse at 50% 45%,#c8323f66,transparent 70%),radial-gradient(ellipse at 45% 0%,#a02a3566,transparent 56%)}
+
+/* Niebla de guerra: la textura vive solo en CSS y las casillas recordadas se atenúan. */
+.map-legend{flex-wrap:wrap;row-gap:8px}
+.map-cell.is-fog{border-color:#202d29;background-color:#18211f;background-image:radial-gradient(circle at 24% 30%,#72807816 0 1px,transparent 2px),radial-gradient(circle at 72% 68%,#050a09aa 0 2px,transparent 3px),repeating-linear-gradient(135deg,#82908708 0 2px,#10171518 2px 5px),linear-gradient(145deg,#26302c,#141b1a);box-shadow:inset 0 0 12px #050908aa}
+.map-cell.is-remembered:not(.is-player){filter:brightness(.52) saturate(.72)}
+.map-cell.is-remembered.is-player{filter:none}
+.legend-fog{display:inline-block;width:9px;height:9px;border:1px solid #53615a;border-radius:2px;vertical-align:-1px;background:repeating-linear-gradient(135deg,#35413b 0 2px,#1b2421 2px 4px)}
+
+/* Terrenos especiales: se dibujan con degradados y texturas CSS, sin imágenes externas. */
+.map-cell.is-swamp{border-color:#536246;background:linear-gradient(155deg,#52613d,#293d32 62%,#1d302b);color:#c1c887}
+.map-cell.is-swamp::before{background:radial-gradient(ellipse at 25% 65%,#c9d27d44 0 2px,transparent 3px),radial-gradient(ellipse at 73% 30%,#d4d58a33 0 1px,transparent 3px),linear-gradient(165deg,transparent 40%,#91a15b22 41% 46%,transparent 47%)}
+.map-cell.is-water{border-color:#4c8790;background:linear-gradient(145deg,#24545b,#183943 65%,#142c35);box-shadow:inset 0 0 9px #071922aa}
+.map-cell.is-water::before{background:repeating-linear-gradient(165deg,transparent 0 7px,#8be0df2b 8px 9px,transparent 10px 16px),radial-gradient(ellipse at 34% 28%,#94e5dc35,transparent 53%)}
+.map-cell.is-ice{border-color:#8eb9c2;background:linear-gradient(145deg,#b7dfe0,#6897a4 54%,#365b6a);box-shadow:inset 0 0 8px #e0ffff66}
+.map-cell.is-ice::before{background:linear-gradient(125deg,transparent 25%,#edffff70 26% 29%,transparent 30% 61%,#d8ffff52 62% 64%,transparent 65%),radial-gradient(ellipse at 25% 20%,#fff9,transparent 40%)}
+.legend-swamp,.legend-water,.legend-ice{display:inline-block;width:9px;height:9px;border:1px solid;border-radius:2px;vertical-align:-1px}
+.legend-swamp{border-color:#718050;background:linear-gradient(145deg,#59683f,#263a30)}
+.legend-water{border-color:#57909a;background:linear-gradient(145deg,#326c75,#173643)}
+.legend-ice{border-color:#a6d5de;background:linear-gradient(145deg,#d1f4f1,#548395)}
+
+/* Cofres, puertas y llaves del mapa, dibujados con formas CSS. */
+.map-cell.is-chest,.map-cell.is-chest-open{border-color:#a88651;background:linear-gradient(145deg,#4c4934,#302d27);color:#f1cf81}
+.map-object-chest,.map-object-chest-open{position:relative;z-index:1;display:block;width:68%;height:55%;border:1px solid #c59a58;border-radius:2px;background:linear-gradient(180deg,#a8753d 0 25%,#76502f 26% 100%);box-shadow:inset 0 -3px #49311f,0 2px 3px #0008}
+.map-object-chest i{position:absolute;left:-2px;right:-2px;top:-32%;height:43%;border:1px solid #dbb56e;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#bd9352,#805b35);transform-origin:bottom;transform:skewY(-12deg)}
+.map-object-chest b{position:absolute;left:43%;top:35%;width:14%;height:24%;border:1px solid #ffe6a0;border-radius:2px;background:#d7b253;box-shadow:0 0 5px #f4d47788}
+.map-object-chest-open{background:linear-gradient(180deg,#59402c 0 30%,#76502f 31% 100%);box-shadow:inset 0 -3px #49311f,0 0 8px #f3ce7866}
+.map-object-chest-open i{transform:translateY(-55%) rotate(-15deg);background:#987042}
+.map-object-chest-open b{opacity:.45}
+.map-cell.is-door{border-color:#88613c;background:linear-gradient(145deg,#4b4032,#302b27)}
+.map-object-door{position:relative;z-index:1;display:block;width:56%;height:78%;border:2px solid #b58a55;border-radius:5px 5px 1px 1px;background:repeating-linear-gradient(90deg,#68462d 0 4px,#805737 5px 7px);box-shadow:inset 0 0 0 2px #402f26,0 2px 3px #0008}
+.map-object-door i{position:absolute;right:17%;top:48%;width:4px;height:4px;border-radius:50%;background:#f0ce79;box-shadow:0 0 5px #f0ce79}
+.map-object-door b{position:absolute;left:40%;top:42%;width:20%;height:22%;border:1px solid #f2d27f;border-radius:4px 4px 2px 2px;background:#4a3929}
+.map-cell.is-key{border-color:#a58b53;background:linear-gradient(145deg,#464332,#292e29);color:#ffe58b}
+.map-object-key{position:relative;z-index:1;display:block;width:70%;height:70%;filter:drop-shadow(0 0 4px #f2ce78aa)}
+.map-object-key::before{content:"";position:absolute;left:50%;top:48%;width:42%;height:2px;background:#f2d67b;transform:rotate(43deg);transform-origin:left center}
+.map-object-key::after{content:"";position:absolute;left:66%;top:66%;width:2px;height:17%;background:#f2d67b;transform:rotate(43deg)}
+.map-object-key i{position:absolute;left:17%;top:13%;width:37%;height:37%;border:2px solid #ffe58b;border-radius:50%;box-shadow:inset 0 0 0 2px #4b4430}
+.legend-chest,.legend-door,.legend-key{display:inline-block;width:9px;height:9px;border:1px solid;border-radius:2px;vertical-align:-1px}
+.legend-chest{border-color:#d2ad68;background:linear-gradient(180deg,#bd9352 0 35%,#76502f 36%)}
+.legend-door{border-color:#b58a55;background:repeating-linear-gradient(90deg,#68462d 0 3px,#805737 4px 5px)}
+.legend-key{border-color:#ffe58b;border-radius:50%;background:#f2d67b;box-shadow:0 0 5px #f2ce78aa}
+.key-row{margin:6px 0 3px}.key-row b{color:var(--gold)}
+
+/* Panel de equipo y resumen compacto de sus estadísticas. */
+.gear-equipped-line{margin:0;padding:8px 10px;border-left:2px solid var(--gold);background:#282f2b;color:#d8d4bd;font:8px var(--mono);letter-spacing:.04em}
+.gear-bonus-summary{margin:3px 0 8px;padding:9px;border:1px solid #665d42;border-radius:3px;color:var(--gold);font:8px/1.6 var(--mono)}
+.gear-summary-row b{max-width:58%;color:var(--gold);font-size:6px;text-align:right}
+.feature-tabs{flex-wrap:wrap}
+
+/* NPCs y conversación: las siluetas usan la misma estructura de sprite del mapa. */
+.map-cell.is-npc{border-color:#8a9167;background:linear-gradient(145deg,#39483b,#28362f);color:var(--green)}
+.sprite-npc-ranger::before,.sprite-npc-echo-guide::before,.sprite-npc-lookout::before{border:1px solid var(--npc-accent);background:var(--npc-primary);box-shadow:0 0 8px var(--npc-primary)}
+.sprite-npc-ranger::before{left:10%;top:8%;width:80%;height:24%;border-radius:48% 48% 20% 20%;clip-path:polygon(8% 35%,30% 0,70% 0,92% 35%,100% 100%,0 100%)}
+.sprite-npc-ranger::after{left:25%;top:31%;width:50%;height:51%;border-color:var(--npc-accent);border-radius:34% 34% 18% 18%;background:linear-gradient(145deg,var(--npc-primary),#3e5143);box-shadow:inset -5px -2px 0 #1118,0 4px 0 #27362d}
+.sprite-npc-ranger i{left:39%;top:46%;background:#e9dfa8;box-shadow:12px 0 #e9dfa8}.sprite-npc-ranger em{left:48%;top:16%;background:#f2d58e}
+.sprite-npc-echo-guide::before{left:18%;top:0;width:64%;height:40%;border:0;border-radius:0;background:var(--npc-primary);clip-path:polygon(50% 0,100% 45%,79% 100%,20% 100%,0 45%)}
+.sprite-npc-echo-guide::after{left:29%;top:28%;width:42%;height:55%;border-color:var(--npc-accent);border-radius:45% 45% 35% 35%;background:linear-gradient(145deg,var(--npc-primary),#554b76);box-shadow:inset -5px -2px 0 #211c3c66,0 4px 0 #343049}
+.sprite-npc-echo-guide i{left:39%;top:48%;background:#eaf6dd;box-shadow:12px 0 #eaf6dd}.sprite-npc-echo-guide em{left:48%;top:18%;background:#a9f2ee;box-shadow:0 0 10px #a9f2ee}
+.sprite-npc-lookout::before{left:10%;top:5%;width:80%;height:27%;border-color:var(--npc-accent);border-radius:6px 6px 2px 2px;background:linear-gradient(90deg,var(--npc-primary),#597487);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%)}
+.sprite-npc-lookout::after{left:27%;top:29%;width:46%;height:54%;border-color:var(--npc-accent);border-radius:42% 42% 23% 23%;background:linear-gradient(145deg,var(--npc-primary),#526f7c 70%,#364c61);box-shadow:inset -5px -2px 0 #20384a66,0 4px 0 #304252}
+.sprite-npc-lookout i{left:39%;top:47%;background:#344455;box-shadow:12px 0 #344455}.sprite-npc-lookout em{left:48%;top:17%;background:#fff0b0;box-shadow:0 0 9px #fff0b0}
+.legend-npc{display:inline-block;width:9px;height:9px;border:1px solid #b2c7a3;border-radius:50%;background:linear-gradient(145deg,#a9c58b,#697f72);vertical-align:-1px}
+.side-quest-line{margin:10px 0 0;padding:8px 8px 0;border-top:1px solid #ffffff12;color:#b2bea9;font:7px/1.55 var(--mono);letter-spacing:.03em}
+.feature-dialogue{width:min(475px,100%)}
+.feature-dialogue .feature-heading{margin-bottom:12px}
+.dialogue-text{margin:0;color:#e4eadb;font:13px/1.65 var(--display)}
+.dialogue-quest{margin:13px 0 0;padding:9px 10px;border-left:2px solid var(--green);background:#202c29;color:#a9b8ad;font:8px/1.6 var(--mono)}
+.dialogue-actions{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap;margin-top:17px}
+.dialogue-button{border:1px solid #48594f;border-radius:3px;padding:9px 11px;background:#26332e;color:#c5d2c3;font:7px var(--mono);letter-spacing:.04em;cursor:pointer}
+.dialogue-button:hover:not(:disabled){border-color:var(--green);color:var(--green)}
+.dialogue-button.is-primary{border-color:#708354;background:#344530;color:#d7ecad}
+.dialogue-button:disabled{opacity:.4;cursor:default}
